@@ -9,3 +9,5 @@
 ## Slides
 
 `lang-slide.ss` has a slideshow slide that uses the picture.
+
+##### Originally by Robby Findler.
