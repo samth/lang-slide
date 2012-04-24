@@ -17,6 +17,7 @@
 (define p1 (lt-superimpose (ghost p2) (vl-append (t "In 6000+ files of") (t "Racket source code ..."))))
 
 (define (langs)
+  (define p1+p2 (vl-append 10 p1 p2))
   (slide/staged [#;hudak one two] 
                 ;#:title "Files in Racket" 
                 ;#:layout 'tall
@@ -24,7 +25,8 @@
                   [(eq? stage-name 'hudak)
                    (mini-slide (vr-append 60 hudak-quote perlis-quote))]
                   [(eq? stage-name 'one)
-                   (langs-pict #f #:picts (list p1))]
+                   (langs-pict #f #:picts (list (lt-superimpose p1 (ghost p1+p2))))]
                   [else
-                   (langs-pict (vl-append 10 p1 p2))])))
+                   (langs-pict p1+p2)])))
 
+(langs)
