@@ -1,5 +1,5 @@
 #lang racket/base
-(require "lang-slide.rkt" ;"../config.rkt"
+(require "lang-slide.rkt"
          slideshow unstable/gui/slideshow)
 
 (provide langs hudak-quote perlis-quote)
