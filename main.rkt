@@ -1,6 +1,8 @@
 #lang racket/base
 (require "lang-slide.rkt"
-         slideshow unstable/gui/slideshow)
+         slideshow
+         slideshow/code
+         unstable/gui/slideshow)
 
 (provide langs hudak-quote perlis-quote)
 
@@ -18,15 +20,16 @@
 
 (define (langs)
   (define p1+p2 (vl-append 10 p1 p2))
-  (slide/staged [#;hudak one two] 
-                ;#:title "Files in Racket" 
-                ;#:layout 'tall
-                (cond 
-                  [(eq? stage-name 'hudak)
-                   (mini-slide (vr-append 60 hudak-quote perlis-quote))]
-                  [(eq? stage-name 'one)
-                   (langs-pict #f #:picts (list (lt-superimpose p1 (ghost p1+p2))))]
-                  [else
-                   (langs-pict p1+p2)])))
+  (parameterize ([current-code-font 'default])
+    (slide/staged [#;hudak one two] 
+                  ;#:title "Files in Racket" 
+                  ;#:layout 'tall
+                  (cond 
+                    [(eq? stage-name 'hudak)
+                     (mini-slide (vr-append 60 hudak-quote perlis-quote))]
+                    [(eq? stage-name 'one)
+                     (langs-pict #f #:picts (list (lt-superimpose p1 (ghost p1+p2))))]
+                    [else
+                     (langs-pict p1+p2)]))))
 
 (langs)

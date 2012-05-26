@@ -1,5 +1,7 @@
 #lang scheme
-(provide langs-pict)
+(provide langs-pict
+         langs-in-tree
+         langs-with-colors)
 (require "draw-plain.ss"
          slideshow slideshow/code
          scheme/runtime-path)
@@ -58,14 +60,13 @@
                (text (car cl) (current-code-font) (current-font-size)))))
 
 (define (langs-pict color? #:picts [p (if (pict? color?) (list color?) (list))])
-  (define colors (map line->color
-                      (append colored-langs (list (list "everything else" "#000000")))))
+  (define colors (langs-with-colors))
   (define len (length colors))
   (define start (ceiling (/ len 2)))
   (define-values (one two) (split-at colors start))
   (ht-append
    0
-   (inset (lang-pict 550 color?) 20 0 0 0)
+   (langs-in-tree color?)
    (apply vc-append 40 
           (ht-append 20
                      ((if color? values ghost)
@@ -74,4 +75,11 @@
                       (apply vl-append 2 two)))
           p)))
 
+(define (langs-with-colors)
+  (map line->color
+       (append colored-langs (list (list "everything else" "#000000")))))
+
+(define (langs-in-tree color?)
+  (inset (lang-pict 550 color?) 14 -30 10 10))
+  
 ;(slide (langs-pict #f)) (slide (langs-pict #t))
