@@ -3,7 +3,7 @@
 (require "draw-plain.ss"
          slideshow slideshow/code
          scheme/runtime-path)
-(define-runtime-path lang-colors.ss "lang-colors.ss")
+(define-runtime-path lang-colors.rkt "lang-colors.rkt")
 
 (define (color->name c)
   (let-values ([(r g b) (split-out-color c)])
@@ -43,7 +43,7 @@
            (color-name->index n2))])))
 
 (define lang-colors 
-  (sort (call-with-input-file lang-colors.ss read)
+  (sort (call-with-input-file lang-colors.rkt read)
         color<=?
         #:key cadr))
 

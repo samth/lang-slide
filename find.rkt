@@ -1,20 +1,7 @@
-#lang scheme
-(require scheme/generator
-         scheme/system
-         racket/draw)
-
-(define (in-files base [reg #f])
-  (in-generator
-   (let loop ([dir/file base])
-     (cond
-       [(directory-exists? dir/file) 
-        (for-each (λ (x) (loop (build-path dir/file x)))
-                  (directory-list dir/file))]
-       [(file-exists? dir/file)
-        (when (or (not reg)
-                  (regexp-match reg (path->string dir/file)))
-          (yield dir/file))]))))
-
+#lang racket
+(require racket/system
+         racket/draw
+         racket/runtime-path)
 
 (define (get-language i)
   (and (or (regexp-match #rx"scrbl$" (path->string i))
@@ -121,7 +108,7 @@
              
 
 (define ht (make-hash))
-(for ((i (in-files (simplify-path (build-path (collection-path "racket") 'up)))))
+(for ((i (in-directory (simplify-path (build-path (collection-path "racket") 'up)))))
   (let ([lang (get-language i)])
     (when lang
       (hash-set! ht lang (cons i (hash-ref ht lang '()))))))
@@ -220,13 +207,13 @@
                  (new-color lang 0 0 0)]))))
 
 (define (new-color lang r g b)
-  (let ([new-color (string-append 
-                    "#"
-                    (to-hex r)
-                    (to-hex g)
-                    (to-hex b))])
-    (hash-set! colors lang new-color)
-    new-color))
+  (define new-color (string-append 
+                     "#"
+                     (to-hex r)
+                     (to-hex g)
+                     (to-hex b)))
+  (hash-set! colors lang new-color)
+  new-color)
 
 (define orig-colors
   #hash((blue . ((0 0 255)  (0 0 240) (0 0 220) (0 0 205) (0 0 190) (0 0 160) 
@@ -235,7 +222,7 @@
         (green . ((0 255 0) (0 230 0) (0 200 0) (0 175 0) (0 150 0) (0 125 0) (0 100 0)))
         (red . ((255 0 0) (230 0 0) (200 0 0) (175 0 0) (150 0 0) (125 0 0) (100 0 0)))
         (yellow . ((255 255 0)))
-        (orange . ("orange" "darkorange"))
+        (orange . ("orange" "darkorange" "gold"))
         (gray . ((240 240 240) (220 220 220) (200 200 200) (180 180 180) (160 160 160) (130 130 130) (100 100 100) (70 70 70) (50 50 50) (30 30 30)))
         (pink . ("pink" "lightpink" "fuchsia"))
         (purple . ("orchid" "purple" "darkviolet"))
@@ -283,9 +270,10 @@
       (to-dot)))
   #:exists 'truncate)
 
-(call-with-output-file "lang-colors.ss"
+(define-runtime-path lang-colors.rkt "lang-colors.rkt")
+(call-with-output-file lang-colors.rkt
   (λ (port)
-    (pretty-print
+    (pretty-write
      (sort (hash-map colors list)
            string<=?
            #:key car)
@@ -295,4 +283,7 @@
 (printf "calling twopi\n")
 (void
  (parameterize ([current-input-port (open-input-string "")])
-   (system "/usr/bin/twopi -Tplain lang.dot > lang.plain")))
+   (system (format "~a -Tplain lang.dot > lang.plain"
+                   (if (file-exists? "/usr/local/bin/twopi")
+                       "/usr/local/bin/twopi"
+                       "/usr/bin/twopi")))))
