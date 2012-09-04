@@ -1,6 +1,6 @@
 ## Finding files
 
-`find.ss` generates `lang.plain` (I don't remember how)
+`find.rkt` generates `lang.plain` (I don't remember how)
 
 ## Pictures
 
@@ -8,6 +8,6 @@
 
 ## Slides
 
-`lang-slide.ss` has a slideshow slide that uses the picture.
+`lang-slide.rkt` has a slideshow slide that uses the picture.
 
 ##### Originally by Robby Findler.

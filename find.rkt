@@ -189,7 +189,8 @@
                 [(or (regexp-match #rx"scheme" lang)
                      (regexp-match #rx"racket" lang)
                      (regexp-match #rx"slideshow" lang)
-                     (regexp-match #rx"#%kernel" lang))
+                     (regexp-match #rx"#%kernel" lang)
+                     (regexp-match #rx"pre-base.rkt" lang))
                  (next-color lang 'blue)]
                 [(or (regexp-match #rx"srfi" lang)
                      (regexp-match #rx"r6rs" lang)
@@ -202,6 +203,8 @@
                 [(or (regexp-match #rx"htdp" lang)
                      (regexp-match #rx"DMdA" lang))
                  (next-color lang 'green)]
+                [(regexp-match #rx"swindle" lang)
+                 (next-color lang 'cyan)]
                 [else
                  (fprintf (current-error-port) "unknown language ~s ~s\n" lang (length (hash-ref ht lang)))
                  (new-color lang 0 0 0)]))))
@@ -226,6 +229,7 @@
         (gray . ((240 240 240) (220 220 220) (200 200 200) (180 180 180) (160 160 160) (130 130 130) (100 100 100) (70 70 70) (50 50 50) (30 30 30)))
         (pink . ("pink" "lightpink" "fuchsia"))
         (purple . ("orchid" "purple" "darkviolet"))
+        (cyan . ((0 255 255) (150 255 255)))
         (brown . ("brown"))))
   
 (define colors-table (hash-copy orig-colors))

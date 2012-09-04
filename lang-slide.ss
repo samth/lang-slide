@@ -80,6 +80,8 @@
        (append colored-langs (list (list "everything else" "#000000")))))
 
 (define (langs-in-tree color?)
-  (inset (lang-pict 550 color?) 14 -30 10 10))
-  
-;(slide (langs-pict #f)) (slide (langs-pict #t))
+  (inset (lang-pict 550 color?) 14 10 10 10))
+
+(module+ main
+  (slide (langs-pict #f))
+  (slide (langs-pict #t)))

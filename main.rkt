@@ -28,7 +28,7 @@
                     [(eq? stage-name 'hudak)
                      (mini-slide (vr-append 60 hudak-quote perlis-quote))]
                     [(eq? stage-name 'one)
-                     (langs-pict #f #:picts (list (lt-superimpose p1 (ghost p1+p2))))]
+                     (frame (langs-pict #f #:picts (list (lt-superimpose p1 (ghost p1+p2)))))]
                     [else
                      (langs-pict p1+p2)]))))
 
