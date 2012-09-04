@@ -3,29 +3,45 @@
          langs-in-tree
          langs-with-colors)
 (require "draw-plain.ss"
+         "orig-colors.rkt"
          slideshow slideshow/code
-         scheme/runtime-path)
+         scheme/runtime-path
+         racket/gui/base)
 (define-runtime-path lang-colors.rkt "lang-colors.rkt")
 
 (define (color->name c)
-  (let-values ([(r g b) (split-out-color c)])
-    (cond
-      [(and (= r 0) (= g 0) (= b 0)) 'black]
-      [(and (= r g) (= r b)) 'gray]
-      [(and (= 255 b) (= r g)) 'blue]
-      [(and (= r 0) (= g 0)) 'blue]
-      [(and (= r 0) (= b 0)) 'green]
-      [(and (= g 0) (= b 0)) 'red]
-      [else 'other])))
+  (define-values (r g b) (split-out-color c))
+  (cond
+    [(and (equal? r 0) (equal? g 0) (equal? b 0))
+     'black]
+    [else
+     (define res 
+       (for/or ([(k v) (in-hash orig-colors)])
+         (for/or ([c (in-list v)])
+           (define rgb (cond
+                         [(string? c)
+                          (define clr (send the-color-database find-color c))
+                          (list (send clr red) (send clr green) (send clr blue))]
+                         [else 
+                          c]))
+           (and (equal? rgb (list r g b))
+                k))))
+     (unless res (error 'color->name "unable to find color name for ~s" c))
+     res]))
 
 (define (color-name->index c)
   (case c
     [(blue) 0]
     [(red) 1]
+    [(orange) 1.5]
     [(green) 2]
     [(gray) 3]
-    [(other) 4]
-    [(black) 5]
+    [(pink) 4]
+    [(cyan) 5]
+    [(purple) 5.5]
+    [(yellow) 7]
+    [(brown) 8]
+    [(black) 100]
     [else (error 'color-name->index "unk ~s" c)]))
 
 (define (split-out-color c)
@@ -33,7 +49,7 @@
    (string->number (substring c 1 3) 16)
    (string->number (substring c 3 5) 16)
    (string->number (substring c 5 7) 16)))
-          
+
 (define (color<=? c1 c2)
   (let ([n1 (color->name c1)]
         [n2 (color->name c2)])

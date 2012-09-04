@@ -1,7 +1,8 @@
 #lang racket
 (require racket/system
          racket/draw
-         racket/runtime-path)
+         racket/runtime-path
+         "orig-colors.rkt")
 
 (define (get-language i)
   (and (or (regexp-match #rx"scrbl$" (path->string i))
@@ -218,20 +219,6 @@
   (hash-set! colors lang new-color)
   new-color)
 
-(define orig-colors
-  #hash((blue . ((0 0 255)  (0 0 240) (0 0 220) (0 0 205) (0 0 190) (0 0 160) 
-                 (50 50 255) (80 80 255) (100 100 255) (0 0 130) (0 0 100) (0 0 70)
-                 "slateblue"))
-        (green . ((0 255 0) (0 230 0) (0 200 0) (0 175 0) (0 150 0) (0 125 0) (0 100 0)))
-        (red . ((255 0 0) (230 0 0) (200 0 0) (175 0 0) (150 0 0) (125 0 0) (100 0 0)))
-        (yellow . ((255 255 0)))
-        (orange . ("orange" "darkorange" "gold"))
-        (gray . ((240 240 240) (220 220 220) (200 200 200) (180 180 180) (160 160 160) (130 130 130) (100 100 100) (70 70 70) (50 50 50) (30 30 30)))
-        (pink . ("pink" "lightpink" "fuchsia"))
-        (purple . ("orchid" "purple" "darkviolet"))
-        (cyan . ((0 255 255) (150 255 255)))
-        (brown . ("brown"))))
-  
 (define colors-table (hash-copy orig-colors))
 
 (define (next-color lang key)
