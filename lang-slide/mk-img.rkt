@@ -1,5 +1,5 @@
 #lang scheme/gui
-(require "lang-slide.ss" slideshow)
+(require "main.rkt" slideshow)
 
 (define the-margin 32)
 
