@@ -261,8 +261,8 @@
       (to-dot)))
   #:exists 'truncate)
 
-(define-runtime-path lang-colors.rkt "lang-colors.rkt")
-(call-with-output-file lang-colors.rkt
+(define-runtime-path lang-colors.rktd "lang-colors.rktd")
+(call-with-output-file lang-colors.rktd
   (λ (port)
     (pretty-write
      (sort (hash-map colors list)

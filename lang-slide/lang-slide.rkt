@@ -7,7 +7,7 @@
          slideshow slideshow/code
          scheme/runtime-path
          racket/gui/base)
-(define-runtime-path lang-colors.rkt "lang-colors.rkt")
+(define-runtime-path lang-colors.rktd "lang-colors.rktd")
 
 (define (color->name c)
   (define-values (r g b) (split-out-color c))
@@ -61,7 +61,7 @@
            (color-name->index n2))])))
 
 (define lang-colors 
-  (sort (call-with-input-file lang-colors.rkt read)
+  (sort (call-with-input-file lang-colors.rktd read)
         color<=?
         #:key cadr))
 
