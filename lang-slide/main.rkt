@@ -75,21 +75,29 @@
                          (string->color (cadr cl)))
                (text (car cl) (current-code-font) (current-font-size)))))
 
-(define (langs-pict color? #:picts [p (if (pict? color?) (list color?) (list))])
+(define (langs-pict color? 
+                    #:fit? [fit? #f]
+                    #:picts [p (if (pict? color?) (list color?) (list))])
   (define colors (langs-with-colors))
   (define len (length colors))
   (define start (ceiling (/ len 2)))
   (define-values (one two) (split-at colors start))
-  (ht-append
-   0
-   (langs-in-tree color?)
-   (apply vc-append 40 
-          (ht-append 20
-                     ((if color? values ghost)
-                      (apply vl-append 2 one))
-                     ((if color? values ghost)
-                      (apply vl-append 2 two)))
-          p)))
+  (define all
+    (ht-append
+     0
+     (langs-in-tree color?)
+     (apply vc-append 40 
+            (ht-append 20
+                       ((if color? values ghost)
+                        (apply vl-append 2 one))
+                       ((if color? values ghost)
+                        (apply vl-append 2 two)))
+            p)))
+  (if fit?
+      (scale all (min 1 
+                      (/ client-w (pict-width all))
+                      (/ client-h (pict-height all))))
+      all))
 
 (define (langs-with-colors)
   (map line->color
@@ -99,6 +107,5 @@
   (inset (lang-pict 550 color?) 14 10 -10 10))
 
 (module+ main
-  (require slideshow)
   (slide (langs-pict #f))
   (slide (langs-pict #t)))
