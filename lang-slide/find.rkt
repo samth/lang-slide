@@ -4,6 +4,11 @@
          racket/runtime-path
          "orig-colors.rkt")
 
+(define root-of-plt-git
+  (simplify-path 
+   (build-path (collection-file-path "base.rkt" "racket")
+               'up 'up 'up 'up 'up)))
+
 (define (get-language i)
   (and (or (regexp-match #rx"scrbl$" (path->string i))
            (regexp-match #rx"[.]rkt$" (path->string i))
@@ -14,7 +19,7 @@
            (simplify-language
             (and (not (skip-file? i))
                  (parameterize ([read-accept-reader #t])
-                   (with-handlers ((exn:fail? (λ (x) (printf "exn when reading ~s\n" i) (raise x))))
+                   (with-handlers ((exn:fail? (λ (x) (printf "exn when reading ~s\n" i) #f #;(raise x))))
                      (let loop ()
                        (let ([line (read-line (peeking-input-port port))])
                          (cond
@@ -109,7 +114,7 @@
              
 
 (define ht (make-hash))
-(for ((i (in-directory (simplify-path (build-path (collection-path "racket") 'up)))))
+(for ((i (in-directory root-of-plt-git)))
   (let ([lang (get-language i)])
     (when lang
       (hash-set! ht lang (cons i (hash-ref ht lang '()))))))
@@ -139,8 +144,7 @@
                     (format "rank~a" next)))))))
 
 (define (file-to-dot filename language)
-  (let ([path (find-relative-path (simplify-path (build-path (collection-path "drscheme") 'up 'up))
-                                  filename)])
+  (let ([path (find-relative-path root-of-plt-git filename)])
     (let loop ([eles (explode-path path)]
                [parent (build-path 'same)]
                [depth 0])

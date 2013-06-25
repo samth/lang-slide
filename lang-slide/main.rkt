@@ -69,7 +69,7 @@
   (partition (λ (x) (equal? (cadr x) "#000000")) lang-colors))
 
 (define (line->color cl)
-  (parameterize ([current-font-size 16])
+  (parameterize ([current-font-size 14])
     (hc-append 6
                (colorize (filled-ellipse 14 14)
                          (string->color (cadr cl)))
@@ -96,7 +96,7 @@
        (append colored-langs (list (list "everything else" "#000000")))))
 
 (define (langs-in-tree color?)
-  (inset (lang-pict 550 color?) 14 10 10 10))
+  (inset (lang-pict 550 color?) 14 10 -10 10))
 
 (module+ main
   (slide (langs-pict #f))

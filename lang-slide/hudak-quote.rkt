@@ -11,12 +11,15 @@
   (vr-append 10 (vl-append (t "“A domain specific language is the ultimate abstraction.” "))
              (t "    — Paul Hudak")))
 
-(define perlis-quote (vr-append 10 (vr-append (t "“There will always be things we wish to say in our programs") 
-                                              (t "that in all known languages can only be said poorly.”"))
-                                (t "   — Alan Perlis")))
+(define perlis-quote 
+  (vr-append 10 (vr-append (t "“There will always be things we wish to say in our programs") 
+                           (t "that in all known languages can only be said poorly.”"))
+             (t "   — Alan Perlis")))
 
 (define p2 (vl-append (t "Racket ships more than") (t "40 documented languages")))
-(define p1 (lt-superimpose (ghost p2) (vl-append (t "In 6000+ files of") (t "Racket source code ..."))))
+(define p1 (lt-superimpose 
+            (ghost p2)
+            (vl-append (t "In 6000+ files of") (t "Racket source code ..."))))
 
 (define (langs)
   (define p1+p2 (vl-append 10 p1 p2))
