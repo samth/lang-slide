@@ -1,5 +1,5 @@
-#lang scheme/gui
-(require "main.rkt" slideshow)
+#lang racket/base
+(require "main.rkt" racket/draw slideshow/pict racket/class)
 
 (define the-margin 32)
 

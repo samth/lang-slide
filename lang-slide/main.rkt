@@ -4,9 +4,9 @@
          langs-with-colors)
 (require "draw-plain.ss"
          "orig-colors.rkt"
-         slideshow slideshow/code
+         racket/draw slideshow/code
          scheme/runtime-path
-         racket/gui/base)
+         slideshow)
 (define-runtime-path lang-colors.rktd "lang-colors.rktd")
 
 (define (color->name c)
@@ -99,5 +99,6 @@
   (inset (lang-pict 550 color?) 14 10 -10 10))
 
 (module+ main
+  (require slideshow)
   (slide (langs-pict #f))
   (slide (langs-pict #t)))
