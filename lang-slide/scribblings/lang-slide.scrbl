@@ -1,5 +1,5 @@
 #lang scribble/manual
-@require[@for-label[lang-slide
+@require[@for-label[lang-slide/pictures
                     racket/base]
          lang-slide/pictures
          ;slideshow/pict
@@ -20,8 +20,20 @@ And here is the languages they use:
 
 @section{Pictures}
 
-@tt{main.rkt} provides several @racketmodname[pict]s,
-with some options.
+@racketmodname{lang-slide/pictures} provides several 
+@racketmodname[pict]s, with some options.
+
+@defproc[(langs-pict [color? any]
+          [#:fit fit (-> pict? pict?)]
+          [#:picts p (listof pict-convertible?)])
+         pict?]{
+}
+@defproc[(langs-in-tree [color? boolean?])
+         pict?]{
+}
+@defproc[(langs-with-colors)
+         (listof pict?)]{
+}
 
 @section{Slides}
 
