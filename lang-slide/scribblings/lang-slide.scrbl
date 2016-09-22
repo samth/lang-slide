@@ -14,7 +14,7 @@ Here is a bird's eye view of the modules implementing racket:
 
 @(langs-pict #f)
 
-And here is the languages they use:
+And here are the languages they use:
 
 @(langs-pict #t)
 
