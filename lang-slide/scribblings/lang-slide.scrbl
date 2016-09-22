@@ -20,6 +20,8 @@ And here is the languages they use:
 
 @section{Pictures}
 
+@defmodule[lang-slide/pictures]
+
 @racketmodname{lang-slide/pictures} provides several 
 @racketmodname[pict]s, with some options.
 
