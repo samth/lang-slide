@@ -1,8 +1,9 @@
-#lang scheme/gui
+#lang racket ;scheme/gui
 (provide lang-pict string->color)
 
 (require scheme/runtime-path
-         slideshow)
+         slideshow/pict
+         racket/draw)
 
 (define-runtime-path lang.plain "lang.plain")
 
