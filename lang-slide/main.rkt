@@ -26,5 +26,5 @@
               #:picts p))
 
 (module+ main
-  (slide (langs-pict #f))
-  (slide (langs-pict #t)))
+  (slide (langs-pict1 #f #:fit? #t))
+  (slide (langs-pict1 #t #:fit? #t)))

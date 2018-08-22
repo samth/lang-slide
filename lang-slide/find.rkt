@@ -7,7 +7,7 @@
 (define root-of-plt-git
   (simplify-path 
    (build-path (collection-file-path "base.rkt" "racket")
-               'up 'up 'up 'up 'up)))
+               'up 'up 'up 'up)))
 
 (define (get-language i)
   (and (or (regexp-match #rx"scrbl$" (path->string i))
@@ -79,8 +79,18 @@
             "typed/racket"]
            [(regexp-match #rx"typed-scheme$" lang)
             "typed/racket"]
+           [(regexp-match #rx"typed/racket #:with-refinements" lang)
+            "typed/racket"]
+           [(regexp-match #rx"typed/racket/base #:with-refinements" lang)
+            "typed/racket/base"]
            [(regexp-match #rx"racket/unit/lang" lang)
             "racket/unit"]
+           [(regexp-match #rx"hyper-literate racket" lang)
+            "racket"]
+           [(regexp-match #rx"hyper-literate typed/racket" lang)
+            "typed/racket"]
+           [(regexp-match #rx"typed-racket/base-env/extra-env-lang" lang)
+            "typed-racket/extra-env-lang"]
            [(regexp-match #rx"srfi/provider" lang)
             "srfi/provider"]
            [(regexp-match #rx"htdp/bsl/reader" lang)
@@ -184,11 +194,14 @@
               (cond
                 [(regexp-match #rx"web" lang)
                  (next-color lang 'purple)]
-                [(or (regexp-match #rx"frtime" lang))
+                [(or (regexp-match #rx"lazy" lang))
                  (next-color lang 'gray)]
-                [(regexp-match #rx"typed" lang)
+                [(or (regexp-match #rx"typed" lang)
+                     (regexp-match #rx"env-lang.rkt" lang)
+                     (regexp-match #rx"type-exp" lang))
                  (next-color lang 'orange)]
                 [(or (regexp-match #rx"at-exp" lang)
+                     (regexp-match #rx"pollen" lang)
                      (regexp-match #rx"scribble" lang))
                  (next-color lang 'red)]
                 [(or (regexp-match #rx"scheme" lang)
@@ -201,14 +214,25 @@
                      (regexp-match #rx"r6rs" lang)
                      (regexp-match #rx"r5rs" lang))
                  (next-color lang 'pink)]
-                [(regexp-match #rx"module-reader" lang)
+                [(or (regexp-match #rx"wrapper" lang)
+                     (regexp-match #rx"wrap.rkt" lang)
+                     (regexp-match #rx"reprovide" lang)
+                     (regexp-match #rx"module-reader" lang))
                  (next-color lang 'brown)]
-                [(regexp-match #rx"setup" lang)
+                [(or (regexp-match #rx"setup" lang)
+                     (regexp-match #rx"info" lang))
                  (next-color lang 'yellow)]
                 [(or (regexp-match #rx"htdp" lang)
-                     (regexp-match #rx"DMdA" lang))
+                     (regexp-match #rx"DMdA" lang)
+                     (regexp-match #rx"eopl" lang)
+                     (regexp-match #rx"plai" lang))
                  (next-color lang 'green)]
-                [(regexp-match #rx"swindle" lang)
+                [(or (regexp-match #rx"datalog" lang)
+                     (regexp-match #rx"racklog" lang)
+                     (regexp-match #rx"frtime" lang)
+                     (regexp-match #rx"swindle" lang)
+                     (regexp-match #rx"honu" lang)
+                     (regexp-match #rx"hackett" lang))
                  (next-color lang 'cyan)]
                 [else
                  (fprintf (current-error-port) "unknown language ~s ~s\n" lang (length (hash-ref ht lang)))

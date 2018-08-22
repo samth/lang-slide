@@ -86,12 +86,13 @@
   (define len (length colors))
   (define start (ceiling (/ len 2)))
   (define-values (one two) (split-at colors start))
+  (define the-graph (langs-in-tree color?))
   (define all
     (ht-append
-     0
-     (langs-in-tree color?)
+     20
+     (vc-append (blank (round (* 1/5 (pict-height the-graph)))) the-graph)
      (apply vc-append 40 
-            (ht-append 20
+            (ht-append 30
                        ((if color? values ghost)
                         (apply vl-append 2 one))
                        ((if color? values ghost)
