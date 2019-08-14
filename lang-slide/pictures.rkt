@@ -3,6 +3,7 @@
 (require "draw-plain.ss"
          "orig-colors.rkt"
          racket/draw
+         racket/promise
          slideshow/code-pict
          racket/runtime-path
          slideshow/pict)
@@ -12,6 +13,7 @@
          langs-with-colors)
 
 (define-runtime-path lang-colors.rktd "lang-colors.rktd")
+(define-runtime-path more-lang-colors.rktd "more-lang-colors.rktd")
 
 (define (color->name c)
   (define-values (r g b) (split-out-color c))
@@ -64,13 +66,16 @@
        (<= (color-name->index n1)
            (color-name->index n2))])))
 
-(define lang-colors 
-  (sort (call-with-input-file lang-colors.rktd read)
-        color<=?
-        #:key cadr))
+(define (get-colors lang-colors.rktd)
+  (define lang-colors 
+    (sort (call-with-input-file lang-colors.rktd read)
+          color<=?
+          #:key cadr))
 
-(define-values (black-langs colored-langs)
-  (partition (λ (x) (equal? (cadr x) "#000000")) lang-colors))
+  (define-values (black-langs colored-langs)
+    (partition (λ (x) (equal? (cadr x) "#000000")) lang-colors))
+
+  colored-langs)
 
 (define (line->color cl)
   (let ([font-size 14])
@@ -79,30 +84,44 @@
                          (string->color (cadr cl)))
                (text (car cl) (current-code-font) font-size))))
 
-(define (langs-pict color? 
+(define (langs-pict color?
+                    #:more? [more? #f]
+                    #:layout [layout '20%] ; '20% or 'center
                     #:fit [fit (λ (x) x)]
                     #:picts [p (if (pict? color?) (list color?) (list))])
-  (define colors (langs-with-colors))
+  (define colors (langs-with-colors #:more? more?))
   (define len (length colors))
   (define start (ceiling (/ len 2)))
   (define-values (one two) (split-at colors start))
-  (define the-graph (langs-in-tree color?))
+  (define the-graph (langs-in-tree color? #:more? more?))
+  (define color-table
+    (apply vc-append 40 
+           (ht-append 30
+                      ((if color? values ghost)
+                       (apply vl-append 2 one))
+                      ((if color? values ghost)
+                       (apply vl-append 2 two)))
+           p))
+  (define sep 20)
   (define all
-    (ht-append
-     20
-     (vc-append (blank (round (* 1/5 (pict-height the-graph)))) the-graph)
-     (apply vc-append 40 
-            (ht-append 30
-                       ((if color? values ghost)
-                        (apply vl-append 2 one))
-                       ((if color? values ghost)
-                        (apply vl-append 2 two)))
-            p)))
+    (case layout
+      [(20%)
+       (ht-append sep
+                  (vc-append (blank (round (* 1/5 (pict-height the-graph)))) the-graph)
+                  color-table)]
+      [(center)
+       (hc-append sep
+                  the-graph
+                  color-table)]))
   (fit all))
 
-(define (langs-with-colors)
-  (map line->color
-       (append colored-langs (list (list "everything else" "#000000")))))
+(define colored-langs (delay (get-colors lang-colors.rktd)))
+(define more-colored-langs (delay (get-colors more-lang-colors.rktd)))
 
-(define (langs-in-tree color?)
-  (inset (lang-pict 550 color?) 14 10 -10 10))
+(define (langs-with-colors #:more? [more? #f])
+  (map line->color
+       (append (force (if more? more-colored-langs colored-langs))
+               (list (list "everything else" "#000000")))))
+
+(define (langs-in-tree color? #:more? [more? #f])
+  (inset (lang-pict 550 color? #:more? more?) 14 10 -10 10))
