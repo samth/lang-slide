@@ -6,52 +6,59 @@
          racket/draw)
 
 (define-runtime-path lang.plain "lang.plain")
+(define-runtime-path more-lang.plain "more-lang.plain")
 
-(define (parse-file)
-  (call-with-input-file lang.plain
-    (λ (port)
-      (for ([l (in-lines port)]) 
-        (parse-line l)))))
-
-;; nodes : hash[string -o> node]
-(define nodes (make-hash))
 (define-struct node (x y w h type color) #:transparent)
 
-;; parents : hash[string -o> string]
-(define parents (make-hash))
+(struct graph (width height nodes parents))
 
-(define graph-width 0)
-(define graph-height 0)
+(define (parse-file lang.plain)
+  ;; nodes : hash[string -o> node]
+  (define nodes (make-hash))
 
-(define (parse-line line)
-  (cond
-    [(regexp-match #rx"^node \"([^\"]*)\" +([0-9.]*) +([0-9.]*) +([0-9.]*) +([0-9.]*) +\"([^\"]*)\" +([^ ]*) +([^ ]*) +([^ ]*) +([^ ]*)"
-                   line)
-     =>
-     (λ (m)
-       (let-values ([(id x y w h label type1 type2 color1 color2)
-                     (apply values (cdr m))])
-         (hash-set! nodes id (make-node (string->number y)
-                                        (string->number x)
-                                        (string->number w)
-                                        (string->number h)
-                                        (string->symbol type2)
-                                        (string->color color1)))))]
-    [(regexp-match #rx"^edge \"([^\"]*)\" +\"([^\"]*)\""
-                   line)
-     =>
-     (λ (m) 
-       (let-values ([(src dest) (apply values (cdr m))])
-         (hash-set! parents dest src)))]
-    [(regexp-match #rx"^graph ([0-9.]*) ([0-9.]*) ([0-9.]*)" line) 
-     =>
-     (λ (m) 
-       (let-values ([(scale w h) (apply values (cdr m))])
-         (set! graph-width (string->number w))
-         (set! graph-height (string->number h))))]
-    [(regexp-match #rx"^stop" line) (void)]
-    [else 
-     (error 'parse-line "unknown line ~s\n" line)]))
+  ;; parents : hash[string -o> string]
+  (define parents (make-hash))
+
+  (define graph-width 0)
+  (define graph-height 0)
+
+  (define (parse-line line)
+    (cond
+      [(regexp-match #rx"^node \"([^\"]*)\" +([0-9.]*) +([0-9.]*) +([0-9.]*) +([0-9.]*) +\"([^\"]*)\" +([^ ]*) +([^ ]*) +([^ ]*) +([^ ]*)"
+                     line)
+       =>
+       (λ (m)
+         (let-values ([(id x y w h label type1 type2 color1 color2)
+                       (apply values (cdr m))])
+           (hash-set! nodes id (make-node (string->number y)
+                                          (string->number x)
+                                          (string->number w)
+                                          (string->number h)
+                                          (string->symbol type2)
+                                          (string->color color1)))))]
+      [(regexp-match #rx"^edge \"([^\"]*)\" +\"([^\"]*)\""
+                     line)
+       =>
+       (λ (m) 
+         (let-values ([(src dest) (apply values (cdr m))])
+           (hash-set! parents dest src)))]
+      [(regexp-match #rx"^graph ([0-9.]*) ([0-9.]*) ([0-9.]*)" line) 
+       =>
+       (λ (m) 
+         (let-values ([(scale w h) (apply values (cdr m))])
+           (set! graph-width (string->number w))
+           (set! graph-height (string->number h))))]
+      [(regexp-match #rx"^stop" line) (void)]
+      [else 
+       (error 'parse-line "unknown line ~s\n" line)]))
+
+  (call-with-input-file
+   lang.plain
+   (λ (port)
+     (for ([l (in-lines port)]) 
+       (parse-line l))))
+
+  (graph graph-width graph-height nodes parents))
 
 (define (string->color str)
   (cond
@@ -62,18 +69,20 @@
      (λ (m)
        (let-values ([(r g b) (apply values (cdr m))])
          (make-object color% 
-           (string->number r 16)
-           (string->number g 16)
-           (string->number b 16))))]
+                      (string->number r 16)
+                      (string->number g 16)
+                      (string->number b 16))))]
     [else
      (let ([c (send the-color-database find-color str)])
        (unless c
          (error 'string->color "unknown color ~s" str))
        c)]))
 
-(define (draw-graph dc dx dy w h color?)
-  (let ([scale (min (/ w graph-width)
-                    (/ h graph-height))])
+(define (draw-graph dc graph dx dy w h color?)
+  (define nodes (graph-nodes graph))
+  (define parents (graph-parents graph))
+  (let ([scale (min (/ w (graph-width graph))
+                    (/ h (graph-height graph)))])
     (define (draw-node name node)
       (case (node-type node)
         [(circle)
@@ -139,8 +148,7 @@
        (< (magnitude x) (magnitude y))]
       [else
        (< ax ay)])))
-
-(parse-file)
+  
 
 #;
 (begin
@@ -153,6 +161,9 @@
                       (draw-graph dc 0 0 w h)))]))
   (send f show #t))
 
-(define (lang-pict size color?)
-  (dc (λ (dc dx dy) (draw-graph dc dx dy size size color?))
+(define g (delay (parse-file lang.plain)))
+(define more-g (delay (parse-file more-lang.plain)))
+
+(define (lang-pict size color? #:more? [more? #f])
+  (dc (λ (dc dx dy) (draw-graph dc (force (if more? more-g g)) dx dy size size color?))
       size size))

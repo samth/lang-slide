@@ -15,7 +15,9 @@
 
 (define (langs-pict1 color? 
                      #:fit? [fit? #f]
-                     #:picts [p (if (pict? color?) (list color?) (list))])
+                     #:picts [p (if (pict? color?) (list color?) (list))]
+                     #:more? [more? #f]
+                     #:layout [layout '20%]) ; '20% or 'center
   (langs-pict color?
               #:fit (λ (all)
                       (if fit?
@@ -23,8 +25,11 @@
                                           (/ client-w (pict-width all))
                                           (/ client-h (pict-height all))))
                           all))
-              #:picts p))
+              #:picts p
+              #:more? more?
+              #:layout layout))
 
 (module+ main
-  (slide (langs-pict1 #f #:fit? #t))
-  (slide (langs-pict1 #t #:fit? #t)))
+  (for* ([more? '(#f #t)]
+         [color? '(#f #t)])
+    (slide (langs-pict1 color? #:fit? #t #:more? more? #:layout 'center))))
